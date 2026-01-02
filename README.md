@@ -6,20 +6,81 @@ https://www.coursera.org/learn/meta-front-end-developer-capstone
 
 
 # Use of Vite as the project build tooling
-The project uses Vite with plugin-react as the UI component framework and plugin-tailwindcss as the CSS framework
 
-Vite has been preferred to Webpack as integration with Tailwind is a plus.
+The project uses Vite with plugin-react as the UI component framework and plugin-tailwindcss as the CSS framework.
 
+Vite has been preferred to Webpack as integration with Tailwind is more straightforward.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 
-Currently, two official plugins are available:
+```
+npm create vite@latest little-lemon-online-app --template react
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+npm install tailwindcss @tailwindcss/vite
+```
 
+Add the @tailwindcss/vite plugin to the Vite configuration, vite.config.js
+```
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+  ],
+})
+```
 
+# Configuration of VS Code
 
-## Expanding the ESLint configuration
+- Install the Tailwind CSS IntelliSense plugin
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Add the tailwindcss plugin to prettier in order to improve the sorting of tailwindcss classes.
+
+    1/ Install prettier-plugin-tailwindcss as a dev-dependency
+  ```
+  npm install -D prettier prettier-plugin-tailwindcss
+  ```
+  2/ Add the plugin to the Prettier configuration (.prettierrc)
+  ```
+  // .prettierrc
+  {
+    "plugins": ["prettier-plugin-tailwindcss"]
+  }
+  ```
+From more details, see https://github.com/tailwindlabs/prettier-plugin-tailwindcss
+
+# Project source code structure
+
+Use of alias-based absolute import available with Vite.
+Option to setup aliases in Vite configuration file vite.config.js
+
+```
+import path from "path";
+import { fileURLToPath } from "url";
+// Define __dirname manually
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+    resolve: {
+        alias: {
+          "@": path.resolve(__dirname, "src"),
+          "@components": path.resolve(__dirname, "src/components"),
+          "@assets": path.resolve(__dirname, "src/assets"),
+          "@utils": path.resolve(__dirname, "src/utils"),
+        }
+    }
+
+```
+
+In root directory src:
+
+- index.css is used to specify the application theme in Tailwind CSS.
+
+- app.jsx defines the common page structure with the Header and Footer components and the available routes.
+
+- The components directory contains all shared components. A component including its own unshared components also contains a components directory.
+
+To be completed.
+

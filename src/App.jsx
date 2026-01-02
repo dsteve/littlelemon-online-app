@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+
+import Page from "@components/page/Page";
+
+import Home from "@pages/home/Home";
+import AboutUs from "@pages/about_us/AboutUs";
+import Menu from "@pages/menu/Menu";
+import Reservation from "@pages/reservation/Reservation";
+import Ordering from "@pages/order/Ordering";
+import Login from "@pages/login/Login";
+import NotFound from "@pages/not_found/NotFound";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        <Routes>
+          <Route path="/" element={<Page children={<Home/>} />} />
+          <Route path="/about" element={<Page children={<AboutUs />} />} />
+          <Route path="/menu" element={<Page children={<Menu />} />} />
+          <Route path="/reservation" element={<Page children={<Reservation />} />} />
+          <Route path="/order" element={<Page children={<Ordering />} />} />
+          <Route path="/login" element={<Page children={<Login />} />} />
+          <Route path="*" element={<Page children={<NotFound />} />} />
+        </Routes>
+  );
 }
 
-export default App
+export default App;
