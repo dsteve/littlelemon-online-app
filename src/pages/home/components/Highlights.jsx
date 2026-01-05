@@ -15,7 +15,7 @@ function Highlights() {
           <div className="col-start-1 font-karla font-bold text-4xl text-left">
             Specials
           </div>
-          <div className="col-start-2 content-end">
+          <div className="col-start-2 content-end text-right">
             <GotoButton to="/menu" variant="primary-yellow" label="Online menu" />
           </div>
         </div>
