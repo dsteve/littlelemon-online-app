@@ -6,11 +6,14 @@ function GotoButton(props) {
   let variant = null;
   switch (props.variant) {
     case "primary-green":
-      variant = "bg-primary-green";
+      variant = "bg-primary-green  hover:shadow-lg hover:shadow-white";
       break;
     case "primary-yellow":
-      variant = "bg-primary-yellow";
+      variant = "bg-primary-yellow  hover:shadow-lg hover:shadow-[#D7D7D7]";
       break;
+      case "secondary-grey" :
+        variant = "border border-secondary-grey text-secondary-grey hover:shadow-lg hover:shadow-[#D7D7D7]";
+        break;
     default:
       variant = "bg-white";
       break;

@@ -11,51 +11,64 @@ function LoginForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setUser("");
+    setPwd("");
     alert(`Hello ${user}. This is your password: ${pwd}`);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid grid-flow-row justify-center border rounded-xl border-primary-green p-10 bg-primary-green font-karla font-normal text-lg">
-        <div className="flex gap-2 p-2">
-          <label htmlFor="user" className="py-0.5 text-white text-right w-22">
-            User:
-          </label>
-          <input
-            type="text"
-            id="user"
-            value={user} // controlled input
-            onChange={(e) => setUser(e.target.value)} // update state
-            placeholder="> Enter your email"
-            className="ml-2 p-0.5 text-black bg-white w-80"
-          />
-        </div>
+        <fieldset>
+          <div className="flex gap-2 p-2">
+            <label htmlFor="user" className="py-0.5 text-white text-right w-22">
+              User:
+            </label>
+            <input
+              type="email"
+              id="user"
+              value={user} // controlled input
+              placeholder="> Enter your email"
+              pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,}$"
+              title="user-name@domain.extension"
+              required
+              onChange={(e) => setUser(e.target.value)} // update state
 
-        <div className="flex gap-2 p-2">
-          <label
-            htmlFor="password"
-            className="py-0.5 text-white text-right w-22"
-          >
-            Password:
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={pwd} // controlled input
-            onChange={(e) => setPwd(e.target.value)} // update state
-            placeholder="> Enter your password"
-            className="ml-2 p-0.5 text-black bg-white w-80"
-          />
-        </div>
+              className="ml-2 p-0.5 text-black bg-white w-80"
+            />
+          </div>
 
-        <div className="flex flex-row-reverse mt-5 text-white">
-          <button
-            type="submit"
-            className="px-5 py-2 border border-white rounded-sm text-center"
-          >
-            Submit
-          </button>
-        </div>
+          <div className="flex gap-2 p-2">
+            <label
+              htmlFor="password"
+              className="py-0.5 text-white text-right w-22"
+            >
+              Password:
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={pwd} // controlled input
+              placeholder="> Enter your password"
+              pattern="^(?=.*[A-Za-z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+              title="Minimum 8 chars, at least 1 letter and 1 special character in !@#$%^&*"
+              required
+              onChange={(e) => setPwd(e.target.value)} // update state
+
+              className="ml-2 p-0.5 text-black bg-white w-80"
+            />
+          </div>
+
+          <div className="flex flex-row-reverse mt-5">
+            <button
+              type="submit"
+              disabled={user === "" || pwd === ""}
+              className="px-5 py-2 bg-primary-yellow disabled:bg-primary-green rounded-sm disabled:border disabled:border-white text-black disabled:text-white text-center"
+            >
+              Submit
+            </button>
+          </div>
+        </fieldset>
       </div>
       <div className="font-karla font-medium underline text-sm">
         <Link to="/change-pwd">Forgot your password ?</Link>
@@ -63,7 +76,9 @@ function LoginForm() {
 
       <div className="flex flex-row gap-2 font-karla font-normal text-sm">
         Don't have an account?
-        <Link to="/sign-in" className="font-medium underline">Sign in</Link>
+        <Link to="/sign-in" className="font-medium underline">
+          Sign in
+        </Link>
       </div>
     </form>
   );
