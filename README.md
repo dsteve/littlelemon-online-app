@@ -36,6 +36,10 @@ export default defineConfig({
   ],
 })
 ```
+# Use of Tailwind Flowbite for a few UI components
+The project uses the NavBar and DatePicker components of the Tailwind Flowbite library.
+
+To be completed ...
 
 # Use of vitest as the project's testing framework for vanilla javascript classes
 See https://vitest.dev/guide
@@ -45,8 +49,6 @@ npm install -D vitest
 ```
 
 Note: Jest is also used in parallel to vitest for React component testing as required by the Meta FED Capstone project for unit testing.
-
-The project uses the NavBar and DatePicker components of the Tailwind Flowbite li
 
 # Configuration of VS Code
 
