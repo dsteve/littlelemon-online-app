@@ -2,8 +2,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
-@plugin "flowbite-react/plugin/tailwindcss";
+@import "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
+@source "../node_modules/flowbite-datepicker";
 
 @theme {
   --color-primary-green: oklch(0.48 0.04 160);

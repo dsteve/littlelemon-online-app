@@ -17,11 +17,16 @@ Vite has been preferred to Webpack as integration with Tailwind is more straight
 npm create vite@latest little-lemon-online-app --template react
 ```
 
+# Use of Tailwind CSS as the project's CSS framework
+The Tailwind CSS utility classes and the Tailwind CSS styling philosophy are used for UI design in the project.
+
+The project also imports Tailwind Flowbite and uses the DatePicker and NavBar components of Flowbite.
+
 ```
 npm install tailwindcss @tailwindcss/vite
 ```
 
-Add the @tailwindcss/vite plugin to the Vite configuration, vite.config.js
+Add the @tailwindcss/vite plugin to the Vite configuration in file vite.config.js
 ```
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -31,6 +36,17 @@ export default defineConfig({
   ],
 })
 ```
+
+# Use of vitest as the project's testing framework for vanilla javascript classes
+See https://vitest.dev/guide
+
+```
+npm install -D vitest
+```
+
+Note: Jest is also used in parallel to vitest for React component testing as required by the Meta FED Capstone project for unit testing.
+
+The project uses the NavBar and DatePicker components of the Tailwind Flowbite li
 
 # Configuration of VS Code
 
