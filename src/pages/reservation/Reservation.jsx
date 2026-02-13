@@ -40,7 +40,7 @@ function Reservation(props) {
         </div>
         <div className="bg-secondary-brown font-karla">
           <p className="font-medium text-xl text-center text-primary-yellow">
-            {todayDateTime.getWeekday()} {todayDateTime.getMonthName()}{" "}
+            {todayDateTime.getWeekday().slice(0,3)}, {todayDateTime.getMonthName()}{" "}
             {todayDateTime.getDay()}, {todayDateTime.getYear()} at{" "}
             {todayDateTime.getShortTime()} in Chicago.
           </p>

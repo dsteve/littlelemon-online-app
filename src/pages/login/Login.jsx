@@ -33,7 +33,6 @@ function LoginForm() {
               title="user-name@domain.extension"
               required
               onChange={(e) => setUser(e.target.value)} // update state
-
               className="ml-2 p-0.5 text-black bg-white w-80"
             />
           </div>
@@ -54,7 +53,6 @@ function LoginForm() {
               title="Minimum 8 chars, at least 1 letter and 1 special character in !@#$%^&*"
               required
               onChange={(e) => setPwd(e.target.value)} // update state
-
               className="ml-2 p-0.5 text-black bg-white w-80"
             />
           </div>

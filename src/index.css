@@ -17,3 +17,7 @@
   --font-markazi: "Markazi Text", serif;
   --font-karla: "Karla", sans-serif;
 }
+
+.bg-primary-100 {
+  background-color: transparent !important;
+}

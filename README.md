@@ -17,6 +17,35 @@ Vite has been preferred to Webpack as integration with Tailwind is more straight
 npm create vite@latest little-lemon-online-app --template react
 ```
 
+# Use of vitest as the project's testing framework for vanilla javascript classes
+See https://vitest.dev/guide
+vitest is nicely integrated with vite and allows using the same dev pipeline for both the app and tests.
+
+```
+npm install -D vitest
+```
+
+Also add "test" in the scripts section of the package.json file:
+```
+{
+  "scripts": {
+    "test": "vitest"
+  }
+}
+``` 
+Note: Jest may also be used in parallel to vitest for React component testing as required by the Meta FED Capstone project for unit testing.
+
+# Use of vitest for custom React hooks testing
+React custom hooks can only be calles inside a component function. An additional library is required to test them.
+```
+  npm install @testing-library/react
+```
+If a custom hook interacts with the DOM, 
+```
+ npm install @testing-library/react @testing-library/jest-dom jsdom
+```
+"Happy dom" is alternatively supported by vitest instead of jsdom.
+
 # Use of Tailwind CSS as the project's CSS framework
 The Tailwind CSS utility classes and the Tailwind CSS styling philosophy are used for UI design in the project.
 
@@ -40,15 +69,6 @@ export default defineConfig({
 The project uses the NavBar and DatePicker components of the Tailwind Flowbite library.
 
 To be completed ...
-
-# Use of vitest as the project's testing framework for vanilla javascript classes
-See https://vitest.dev/guide
-
-```
-npm install -D vitest
-```
-
-Note: Jest is also used in parallel to vitest for React component testing as required by the Meta FED Capstone project for unit testing.
 
 # Configuration of VS Code
 

@@ -23,7 +23,7 @@ export class LocalChicagoDateTime {
     Saturday: 6,
   };
 
-  static #weekDayNames = Object.keys(LocalChicagoDateTime.weekDays);
+  static weekDayNames = Object.keys(LocalChicagoDateTime.weekDays);
 
   // Static class member `monthNames` maps numeric month values to their corresponding names.
   // Placeholder at index 0 to align array indexes with month numbers (1–12).
@@ -93,9 +93,34 @@ export class LocalChicagoDateTime {
       minutes: v.minute.padStart(2, "0"),
       seconds: v.second.padStart(2, "0"),
       utcOffset: `${sign}${hh}:${mm}`,
-      iso8601String: `${v.year}-${v.month}-${v.day}T${v.hour}:${v.minute}:${v.second}${sign}${hh}:${mm}`,
+      iso8601String: `${v.year}-${v.month.padStart(2, "0")}-${v.day.padStart(2, "0")}T${v.hour.padStart(2, "0")}:${v.minute.padStart(2, "0")}:${v.second.padStart(2, "0")}${sign}${hh}:${mm}`,
     };
   }
+
+  // The difference between America/Chicago and local browser utc offsets, computed in minutes,
+  // serves the mapping of Date instance to a LocalChicagoDateTime instance while keeping same date and time values.
+  static #computeChicagoMinusBrowserLocalOffsetDeltaMinutes() {
+    function utcOffsetToMinutes(utcOffset) {
+      const [hours, minutes] = utcOffset.split(":");
+      return Number(hours) * 60 + Number(minutes);
+    }
+
+    const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const { utcOffset: browserUTCOffset } =
+      LocalChicagoDateTime.#toIso8601WithOffset(undefined, browserTimeZone);
+    const { utcOffset: chicagoUTCOffset } =
+      LocalChicagoDateTime.#toIso8601WithOffset(
+        undefined,
+        LocalChicagoDateTime.#chicagoTimeZone,
+      );
+    const offsetDeltaMinutes =
+      utcOffsetToMinutes(chicagoUTCOffset) -
+      utcOffsetToMinutes(browserUTCOffset);
+    return offsetDeltaMinutes;
+  }
+
+  static #offsetDeltaMinutes =
+    LocalChicagoDateTime.#computeChicagoMinusBrowserLocalOffsetDeltaMinutes();
 
   // Creates a LocalChicagoDateTime from now, a Date object, or an ISO 8601 string.
   constructor(value = new Date()) {
@@ -176,7 +201,8 @@ export class LocalChicagoDateTime {
   }
 
   prettyDisplayDate() {
-    return `${this.#weekday} ${this.getMonthName()} ${this.#day}, ${this.#year}`;
+    // Short week day names for US locale only (slicing long names after 3 characters).
+    return `${this.#weekday.slice(0, 3)}, ${this.getMonthName()} ${this.#day}, ${this.#year}`;
   }
 
   getShortTime() {
@@ -194,13 +220,47 @@ export class LocalChicagoDateTime {
 
   forceSetDate(date) {
     // Patches YYYY-MM-DD
+
+    function substractMinutes(date, minutes) {
+      // WARNING: Function AddtMinutes() does not mutate the date parameter
+      const newDate = new Date(date);
+      newDate.setMinutes(date.getMinutes() - minutes);
+      return newDate;
+    }
+
     let parts = date.split("-", 3);
-    if (parts[0] !== undefined) this.#year = parts[0];
-    if (parts[1] !== undefined) this.#month = parts[1];
-    if (parts[2] !== undefined) this.#day = parts[2];
-    const tmpDate = new Date(`${this.#year}-${this.#month}-${this.#day}`);
-    this.#weekday = LocalChicagoDateTime.#weekDayNames[tmpDate.getDay()];
-    this.#iso8601String = `${this.#year}-${this.#month}-${this.#day}T${this.#hours}:${this.#minutes}:${this.#seconds}${this.#utcOffset}`;
+    if (parts[0] === undefined || parts[1] === undefined || parts[2] === undefined)
+      throw new TypeError("Invalid date format. Only YYYY-MM-DD allowed");
+
+    // WARNING: Force changing a date may require a recompute of #weekday and #utcOffset (Daylight saving time).
+    const datePatchAtChicago = `${parts[0]}-${parts[1]}-${parts[2]}T${this.#hours}:${this.#minutes}:${this.#seconds}`;
+    // Build a Date instance with same UTC date and time values in the browser local timezone.
+    const patchedDate = new Date(datePatchAtChicago);
+    const value = substractMinutes(patchedDate, LocalChicagoDateTime.#offsetDeltaMinutes);
+
+    const {
+      year,
+      month,
+      day,
+      weekday,
+      hours,
+      minutes,
+      seconds,
+      utcOffset,
+      iso8601String,
+    } = LocalChicagoDateTime.#toIso8601WithOffset(
+      value,
+      LocalChicagoDateTime.#chicagoTimeZone
+    );
+    this.#year = year;
+    this.#month = month;
+    this.#day = day;
+    this.#weekday = weekday;
+    this.#hours = hours;
+    this.#minutes = minutes;
+    this.#seconds = seconds;
+    this.#utcOffset = utcOffset;
+    this.#iso8601String = iso8601String;
   }
 
   forceSetTime(time) {
@@ -213,10 +273,10 @@ export class LocalChicagoDateTime {
   }
 
   addDays(number) {
-    const date = new Date(this.#year, this.#month, this.#day);
+    const date = new Date(`${this.#year}-${this.#month}-${this.#day}`);
     date.setDate(date.getDate() + number);
     this.forceSetDate(
-      `${date.getYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
     );
   }
 
@@ -224,8 +284,7 @@ export class LocalChicagoDateTime {
     const date = new Date(`${this.#year}-${this.#month}-${this.#day}`);
     date.setMonth(date.getMonth() + number);
     this.forceSetDate(
-      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
-    );
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`);
   }
 
   // UTILITIES FOR DATEPICKER COMPONENTS USING BROWSER LOCAL TIMEZONE DATES AND TIMES, TO DISPLAY LOCAL CHICAGO DATES AND TIMES.
@@ -233,15 +292,6 @@ export class LocalChicagoDateTime {
   // Transform a javascript Date object (browser local timezone) into a LocalChicagoDateTime object (America/Chicago timezone)
   // with the same values for year, month, days, hours, minutes, seconds.
   static normalizeDateToLcdt(date) {
-    if (!(date instanceof Date)) {
-      throw new TypeError("Only Date object allowed");
-    }
-
-    function utcOffsetToMinutes(utcOffset) {
-      const [hours, minutes] = utcOffset.split(":");
-      return Number(hours) * 60 + Number(minutes);
-    }
-
     function substractMinutes(date, minutes) {
       // WARNING: Function subtractMinutes() does not mutate the date parameter
       const newDate = new Date(date);
@@ -249,20 +299,16 @@ export class LocalChicagoDateTime {
       return newDate;
     }
 
+    if (!(date instanceof Date)) {
+      throw new TypeError("Only Date object allowed");
+    }
     // Adjust the input date by the difference between the Chicago UTC offset
     // and the browser’s local UTC offset (substraction), then convert it to a LocalChicagoDateTime.
-    const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const { utcOffset: browserUTCOffset } =
-      LocalChicagoDateTime.#toIso8601WithOffset(undefined, browserTimeZone);
-    const { utcOffset: chicagoUTCOffset } =
-      LocalChicagoDateTime.#toIso8601WithOffset(
-        undefined,
-        LocalChicagoDateTime.#chicagoTimeZone,
-      );
-    const offsetDeltaMinutes =
-      utcOffsetToMinutes(chicagoUTCOffset) -
-      utcOffsetToMinutes(browserUTCOffset);
-    const newDate = substractMinutes(date, offsetDeltaMinutes);
+
+    const newDate = substractMinutes(
+      date,
+      LocalChicagoDateTime.#offsetDeltaMinutes,
+    );
 
     return new LocalChicagoDateTime(newDate);
   }
@@ -274,7 +320,7 @@ export class LocalChicagoDateTime {
       throw new TypeError("Only LocalChicagoDateTime object allowed");
     }
 
-    const date = new Date(localChicagoDateTime.getIso8601String().slice(0, 10));
+    const date = new Date(localChicagoDateTime.getIso8601String().slice(0, 19));
     return date;
   }
 
@@ -294,6 +340,7 @@ export class LocalChicagoDateTime {
     }
     const date = new LocalChicagoDateTime();
     date.forceSetDate(input);
+    date.forceSetTime("00:00:00");
     return date;
   }
 
