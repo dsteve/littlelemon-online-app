@@ -7,7 +7,7 @@ import party from "@assets/party-horn.svg";
 import dishIcon from "@assets/dish.svg";
 
 import GotoButton from "@components/button/Button";
-import { AccordionGroup, Accordion } from "@utils/Accordion";
+import { AccordionGroup, Accordion } from "@components/accordion/Accordion";
 import GuestSelectorView from "./GuestSelectorView";
 import DateSelectorView from "./DateSelectorView";
 import TimeSelectorView from "./TimeSelectorView";

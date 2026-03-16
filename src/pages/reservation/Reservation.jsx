@@ -56,7 +56,7 @@ function Reservation(props) {
       <div className="col-start-2">
         <div className="grid grid-cols-[1fr_8fr_1fr] gap-0">
           <div className="col-start-2 text-3xl text-primary-green text-center">
-            <p className="text-6xl">Reserve a table</p>
+            <p data-testid="reservation-page-title" className="text-6xl">Reserve a table</p>
             <p>at Little Lemon Restaurant - Chicago</p>
           </div>
           <div className="col-start-2 p-8">

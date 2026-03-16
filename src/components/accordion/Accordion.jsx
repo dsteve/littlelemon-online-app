@@ -11,7 +11,7 @@ export function AccordionGroup({ children }) {
 
   /*  TO BE REENGINEERED
   // Set of Accordion elements in the accordion group.
-  // The set is nitially empty and each new Accordion element needs to register to the group to get an ID.
+  // The set is initially empty and each new Accordion element needs to register to the group to get an ID.
   const [group, SetGroup] = useState([]);
 
 

@@ -1,102 +1,204 @@
-import { expect, test } from "vitest";
-import { renderHook} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { renderHook } from "@testing-library/react";
 import { LocalChicagoDateTime } from "@utils/LocalChicagoDateTime.js";
 
 import useReservation from "@pages/reservation/hooks/useReservation";
 
-// TEST - USERESERVATION
-test("Hook useReservation: useReservation", () => {
-  const runResult = (x) => {
-    const todayDateTime = x.todayDateTime;
-    const minGuestNb = x.minGuestNb;
-    const maxGuestNb = x.maxGuestNb;
-    const selectedGuests = x.selectedGuests;
-    const handleGuestsChange = x.handleGuestsChange;
-    const closedDays = x.closedDays;
-    const minLocalBookingDateTime = x.minLocalBookingDateTime;
-    const maxLocalBookingDateTime = maxLocalBookingDateTime;
-    const availableLunchTimes = x.availableLunchTimes;
-    const availableDinerTimes = x.availableDinerTimes;
-    const selectedDateTime = x.selectedDateTime;
-    const handleDateChange = x.handleDateChange;
-    const handleTimeChange = x.handleTimeChange;
-    const occasionList = x.occasionList;
-    const selectedOccasion = x.selectedOccasion;
-    const handleOccasionChange = x.handleOccasionChange;
-    const handleSubmit = x.handleSubmit;
+describe("React custom hook useReservation", () => {
+  // React custom hook useReservation test set.
 
-    return {
-      todayDateTime,
-      minGuestNb,
-      maxGuestNb,
-      selectedGuests,
-      handleGuestsChange,
-      closedDays,
-      minLocalBookingDateTime,
-      maxLocalBookingDateTime,
-      availableLunchTimes,
-      availableDinerTimes,
-      selectedDateTime,
-      handleDateChange,
-      handleTimeChange,
-      occasionList,
-      selectedOccasion,
-      handleOccasionChange,
-      handleSubmit,
-    };
-  };
+  beforeEach(() => {
+    // tell vitest we use mocked time
+    vi.useFakeTimers();
+  });
 
-  const expectedResult = () => {
-    const todayDateTime = new LocalChicagoDateTime();
-    const minLocalBookingDateTime = new LocalChicagoDateTime();
-    const maxLocalBookingDateTime = new LocalChicagoDateTime();
-    const availableLunchTimes = [
-      "12:00",
-      "12:30",
-      "13:00",
-      "13:30",
-      "14:00",
-      "14:30",
-    ];
-    const availableDinerTimes = [
-      "19:00",
-      "19:30",
-      "20:00",
-      "20:30",
-      "21:00",
-      "21:30",
-      "22:00",
-    ];
-    const selectedDateTime = new LocalChicagoDateTime();
+  afterEach(() => {
+    // restoring date after each test run
+    vi.useRealTimers();
+  });
 
-    return {
-      todayDateTime: todayDateTime,
-      minGuestNb: 1,
-      maxGuestNb: 10,
-      selectedGuests: 2,
-      handleGuestsChange: null,
-      closedDays: [
+  // TEST - USERESERVATION
+  test.each([
+    { // Scenario: current date and time is an opening day before today's lunch opening hours
+      today: "2026-02-12T17:30",
+      threeMonthsLater: "2026-05-11",
+      selectedTime: "12:00:00",
+      selectedDate: "2026-02-12",
+      expectedAvailableLunchTimes: [
+        "12:00",
+        "12:15",
+        "12:30",
+        "12:45",
+        "13:00",
+        "13:15",
+        "13:30",
+        "13:45",
+      ],
+      expectedAvailableDinerTimes: [
+        "19:00",
+        "19:15",
+        "19:30",
+        "19:45",
+        "20:00",
+        "20:15",
+        "20:30",
+        "21:00",
+        "21:30",
+        "21:45",
+      ],
+    },
+    { // Scenario: current date and time is an opening day within today's lunch opening hours
+      today: "2026-02-12T19:40",
+      threeMonthsLater: "2026-05-11",
+      selectedTime: "12:45:00",
+      selectedDate: "2026-02-12",
+      expectedAvailableLunchTimes: [
+        "12:45",
+        "13:00",
+        "13:15",
+        "13:30",
+        "13:45",
+      ],
+      expectedAvailableDinerTimes: [
+        "19:00",
+        "19:15",
+        "19:30",
+        "19:45",
+        "20:00",
+        "20:15",
+        "20:30",
+        "21:00",
+        "21:30",
+        "21:45",
+      ],
+    },
+    { // Scenario: current date and time is an opening day before today's dinner opening hours
+      today: "2026-02-12T23:15",
+      threeMonthsLater: "2026-05-11",
+      selectedTime: "19:00:00",
+      selectedDate: "2026-02-12",
+      expectedAvailableLunchTimes: [
+      ],
+      expectedAvailableDinerTimes: [
+        "19:00",
+        "19:15",
+        "19:30",
+        "19:45",
+        "20:00",
+        "20:15",
+        "20:30",
+        "21:00",
+        "21:30",
+        "21:45",
+      ],
+    },
+    { // Scenario: current date and time is an opening day within today's dinner opening hours
+      today: "2026-02-13T03:05",
+      threeMonthsLater: "2026-05-11",
+      selectedTime: "20:00:00",
+      selectedDate: "2026-02-12",
+      expectedAvailableLunchTimes: [
+      ],
+      expectedAvailableDinerTimes: [
+        "20:15",
+        "20:30",
+        "21:00",
+        "21:30",
+        "21:45",
+      ],
+    },
+    { // Scenario: current date and time is a closed day
+      today: "2026-02-16T17:30",
+      threeMonthsLater: "2026-05-15",
+      selectedTime: "12:00:00",
+      selectedDate: "2026-02-17",
+      expectedAvailableLunchTimes: [
+        "12:00",
+        "12:15",
+        "12:30",
+        "12:45",
+        "13:00",
+        "13:15",
+        "13:30",
+        "13:45",
+      ],
+      expectedAvailableDinerTimes: [
+        "19:00",
+        "19:15",
+        "19:30",
+        "19:45",
+        "20:00",
+        "20:15",
+        "20:30",
+        "21:00",
+        "21:30",
+        "21:45",
+      ],
+    },
+  ])(
+    "Hook useReservation: useReservation $today",
+    ({
+      today,
+      threeMonthsLater,
+      selectedTime,
+      selectedDate,
+      expectedAvailableLunchTimes,
+      expectedAvailableDinerTimes,
+    }) => {
+      
+      
+      
+      
+      
+      const todayDate = new Date(today);
+      vi.setSystemTime(todayDate);
+
+      const todayDateTime = new LocalChicagoDateTime();
+      const minLocalBookingDateTime = new LocalChicagoDateTime(); // Today.
+      minLocalBookingDateTime.forceSetTime("00:00:00");
+      const maxLocalBookingDateTime = new LocalChicagoDateTime();
+      maxLocalBookingDateTime.forceSetTime("00:00:00");
+      maxLocalBookingDateTime.forceSetDate(threeMonthsLater); // 3 months later than minLocalBookingDateTime.
+      const selectedDateTime = new LocalChicagoDateTime();
+      selectedDateTime.forceSetTime(selectedTime);
+      selectedDateTime.forceSetDate(selectedDate);
+
+      const { result } = renderHook(() => useReservation());
+
+      expect(result.current.todayDateTime).toEqual(todayDateTime);
+      expect(result.current.minGuestNb).toEqual(1); // 1
+      expect(result.current.maxGuestNb).toEqual(10); // 10
+      expect(result.current.selectedGuests).toEqual(2); // 2
+      expect(result.current.closedDays).toEqual([
         LocalChicagoDateTime.weekDays["Sunday"],
         LocalChicagoDateTime.weekDays["Monday"],
-      ],
-      minLocalBookingDateTime: minLocalBookingDateTime,
-      maxLocalBookingDateTime: maxLocalBookingDateTime,
-      availableLunchTimes: availableLunchTimes,
-      availableDinerTimes: availableDinerTimes,
-      selectedDateTime: selectedDateTime,
-      handleDateChange: null,
-      handleTimeChange: null,
-      occasionList: ["Birthday", "Engagement", "Anniversary", "Graduation"],
-      selectedOccasion: null,
-      handleOccasionChange: null,
-      handleSubmit: null,
-    };
-  };
+      ]);
+      expect(result.current.minLocalBookingDateTime).toEqual(
+        minLocalBookingDateTime,
+      );
+      expect(result.current.maxLocalBookingDateTime).toEqual(
+        maxLocalBookingDateTime,
+      );
+      expect(result.current.availableLunchTimes).toEqual(
+        expectedAvailableLunchTimes,
+      );
+      expect(result.current.availableDinerTimes).toEqual(
+        expectedAvailableDinerTimes,
+      );
+      expect(result.current.selectedDateTime).toEqual(selectedDateTime);
+      expect(result.current.occasionList).toEqual([
+        "Birthday",
+        "Engagement",
+        "Anniversary",
+        "Graduation",
+      ]);
+      expect(result.current.selectedOccasion).toEqual(null);
 
-  const run = () => {
-    return runResult(result);
-  };
-
-  const { result } = renderHook(() => useReservation());
-  expect(result).toEqual(expectedResult());
+      expect(typeof result.current.handleGuestsChange).toBe("function");
+      expect(typeof result.current.handleDateChange).toBe("function");
+      expect(typeof result.current.handleTimeChange).toBe("function");
+      expect(typeof result.current.handleOccasionChange).toBe("function");
+      expect(typeof result.current.handleSubmit).toBe("function");
+    },
+  );
 });

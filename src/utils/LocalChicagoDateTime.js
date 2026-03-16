@@ -99,7 +99,7 @@ export class LocalChicagoDateTime {
 
   // The difference between America/Chicago and local browser utc offsets, computed in minutes,
   // serves the mapping of Date instance to a LocalChicagoDateTime instance while keeping same date and time values.
-  static #computeChicagoMinusBrowserLocalOffsetDeltaMinutes() {
+  static #computeChicagoMinusBrowserLocalOffsetDeltaMinutes(date=null) {
     function utcOffsetToMinutes(utcOffset) {
       const [hours, minutes] = utcOffset.split(":");
       return Number(hours) * 60 + Number(minutes);
@@ -107,10 +107,10 @@ export class LocalChicagoDateTime {
 
     const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const { utcOffset: browserUTCOffset } =
-      LocalChicagoDateTime.#toIso8601WithOffset(undefined, browserTimeZone);
+      LocalChicagoDateTime.#toIso8601WithOffset(date, browserTimeZone);
     const { utcOffset: chicagoUTCOffset } =
       LocalChicagoDateTime.#toIso8601WithOffset(
-        undefined,
+        date,
         LocalChicagoDateTime.#chicagoTimeZone,
       );
     const offsetDeltaMinutes =
@@ -118,9 +118,6 @@ export class LocalChicagoDateTime {
       utcOffsetToMinutes(browserUTCOffset);
     return offsetDeltaMinutes;
   }
-
-  static #offsetDeltaMinutes =
-    LocalChicagoDateTime.#computeChicagoMinusBrowserLocalOffsetDeltaMinutes();
 
   // Creates a LocalChicagoDateTime from now, a Date object, or an ISO 8601 string.
   constructor(value = new Date()) {
@@ -222,7 +219,7 @@ export class LocalChicagoDateTime {
     // Patches YYYY-MM-DD
 
     function substractMinutes(date, minutes) {
-      // WARNING: Function AddtMinutes() does not mutate the date parameter
+      // WARNING: Function substractMinutes() does not mutate the date parameter
       const newDate = new Date(date);
       newDate.setMinutes(date.getMinutes() - minutes);
       return newDate;
@@ -236,7 +233,7 @@ export class LocalChicagoDateTime {
     const datePatchAtChicago = `${parts[0]}-${parts[1]}-${parts[2]}T${this.#hours}:${this.#minutes}:${this.#seconds}`;
     // Build a Date instance with same UTC date and time values in the browser local timezone.
     const patchedDate = new Date(datePatchAtChicago);
-    const value = substractMinutes(patchedDate, LocalChicagoDateTime.#offsetDeltaMinutes);
+    const value = substractMinutes(patchedDate, LocalChicagoDateTime.#computeChicagoMinusBrowserLocalOffsetDeltaMinutes(patchedDate));
 
     const {
       year,
@@ -307,7 +304,7 @@ export class LocalChicagoDateTime {
 
     const newDate = substractMinutes(
       date,
-      LocalChicagoDateTime.#offsetDeltaMinutes,
+      LocalChicagoDateTime.#computeChicagoMinusBrowserLocalOffsetDeltaMinutes(date),
     );
 
     return new LocalChicagoDateTime(newDate);

@@ -24,5 +24,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom", // required for React hooks
+    globals: true,
+    setupFiles: "./src/setupTests.js", //setupTests.js is the standard setup file for vitest.
   },
 });

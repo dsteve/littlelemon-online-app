@@ -1,4 +1,4 @@
-import { describe, beforeAll, test, expect } from "vitest";
+import { afterEach, beforeEach, beforeAll, describe, expect, test, vi} from "vitest";
 import { LocalChicagoDateTime } from "@utils/LocalChicagoDateTime.js";
 
 describe("Utility class LocalChicagoDateTime", () => {
@@ -14,6 +14,18 @@ describe("Utility class LocalChicagoDateTime", () => {
       return;
     }
     displayClassStaticVariable();
+  });
+
+    beforeEach(() => {
+    // tell vitest we use mocked time
+    vi.useFakeTimers();
+    const todayDate = new Date(2026, 1, 12, 17, 30); // Thursday Feb 12, 17:30:00 local time zone (CET). Month 1 is Feb.
+    vi.setSystemTime(todayDate); // Fake system time set to Thursday Feb 12, 17:30:00.
+  });
+
+  afterEach(() => {
+    // restoring date after each test run
+    vi.useRealTimers();
   });
 
   // TEST - CLASS CONSTRUCTOR - NO PARAMETER
@@ -36,7 +48,7 @@ describe("Utility class LocalChicagoDateTime", () => {
 
     const expectedResult = () => {
       // Test dates MUST belong to the interval from 01 Jan 2026 00:00:00 to 31 Dec 2026 23:59:59
-      // This will make this test fail in 2027 and dates in function expectedResult will have to be updates.
+      // Before each test run, the local system time is set to Thursday Feb 12, 17:30:00.
       const formatter = new Intl.DateTimeFormat("en-CA", {
         timeZone: "America/Chicago",
         year: "numeric",
@@ -102,7 +114,7 @@ describe("Utility class LocalChicagoDateTime", () => {
 
     const expectedResult = () => {
       // Test dates MUST belong to the interval from 01 Jan 2026 00:00:00 to 31 Dec 2026 23:59:59
-      // This will make this test fail in 2027 and dates in function expectedResult will have to be updates.
+      // Before each test run, the local system time is set to Thursday Feb 12, 17:30:00.
       const formatter = new Intl.DateTimeFormat("en-CA", {
         timeZone: "America/Chicago",
         year: "numeric",
@@ -408,7 +420,64 @@ describe("Utility class LocalChicagoDateTime", () => {
   });
 
   // TEST - CLASS METHOD - FORCESETDATE()
-  test("Class LocalChicagoDateTime: class method - forceSetDate()", () => {
+  test.each([
+    {
+      input: "2027-01-15",
+      expected: {
+        year: "2027",
+        month: "01",
+        day: "15",
+        weekday: "Friday",
+        hours: "14",
+        minutes: "30",
+        seconds: "00",
+        utcOffset: "-06:00",
+        iso8601String: "2027-01-15T14:30:00-06:00",
+      }
+    },
+    {
+      input: "2027-03-15",
+      expected: {
+        year: "2027",
+        month: "03",
+        day: "15",
+        weekday: "Monday",
+        hours: "14",
+        minutes: "30",
+        seconds: "00",
+        utcOffset: "-05:00",
+        iso8601String: "2027-03-15T14:30:00-05:00",
+      }
+    },
+    {
+      input: "2027-09-15",
+      expected: {
+        year: "2027",
+        month: "09",
+        day: "15",
+        weekday: "Wednesday",
+        hours: "14",
+        minutes: "30",
+        seconds: "00",
+        utcOffset: "-05:00",
+        iso8601String: "2027-09-15T14:30:00-05:00",
+      }
+    },
+    {
+      input: "2027-12-15",
+      expected: {
+        year: "2027",
+        month: "12",
+        day: "15",
+        weekday: "Wednesday",
+        hours: "14",
+        minutes: "30",
+        seconds: "00",
+        utcOffset: "-06:00",
+        iso8601String: "2027-12-15T14:30:00-06:00",
+      }
+    },
+  ])("Class LocalChicagoDateTime: class method - forceSetDate($input)", ({input, expected}) => {
     const runResult = (x) => {
       if (!(x instanceof LocalChicagoDateTime))
         throw new TypeError("Only LocalChicagoDateTime object allowed");
@@ -426,22 +495,12 @@ describe("Utility class LocalChicagoDateTime", () => {
     };
 
     const expectedResult = () => {
-      return {
-        year: "2027",
-        month: "09",
-        day: "15",
-        weekday: "Wednesday",
-        hours: "14",
-        minutes: "30",
-        seconds: "00",
-        utcOffset: "-05:00",
-        iso8601String: "2027-09-15T14:30:00-05:00",
-      };
+      return expected;
     };
 
     const run = () => {
       const x = new LocalChicagoDateTime("2026-07-18T19:30:00Z"); // The initial ISO 6801 value is given as UTC (Z)
-      x.forceSetDate("2027-09-15"); // 2027-09-15T14:30 in America/Chicago timezone
+      x.forceSetDate(input); // inputT14:30 in America/Chicago timezone
       return runResult(x);
     };
 
