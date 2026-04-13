@@ -25,8 +25,8 @@ function BookingForm({
   maxLocalBookingDateTime,
   selectedDateTime,
   handleDateChange,
-  availableLunchTimes,
-  availableDinerTimes,
+  lunchServiceTimeslots,
+  dinerServiceTimeslots,
   handleTimeChange,
   occasionList,
   selectedOccasion,
@@ -69,8 +69,8 @@ function BookingForm({
               {
                 selector: (
                   <TimeSelectorView
-                    lunchTimes={availableLunchTimes}
-                    dinerTimes={availableDinerTimes}
+                    lunchTimes={lunchServiceTimeslots}
+                    dinerTimes={dinerServiceTimeslots}
                     selectedTime={selectedDateTime}
                     handleTimeChange={handleTimeChange}
                   />

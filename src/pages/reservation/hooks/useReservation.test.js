@@ -179,10 +179,10 @@ describe("React custom hook useReservation", () => {
       expect(result.current.maxLocalBookingDateTime).toEqual(
         maxLocalBookingDateTime,
       );
-      expect(result.current.availableLunchTimes).toEqual(
+      expect(result.current.lunchServiceTimeslots).toEqual(
         expectedAvailableLunchTimes,
       );
-      expect(result.current.availableDinerTimes).toEqual(
+      expect(result.current.dinerServiceTimeslots).toEqual(
         expectedAvailableDinerTimes,
       );
       expect(result.current.selectedDateTime).toEqual(selectedDateTime);

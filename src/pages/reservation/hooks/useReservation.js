@@ -22,8 +22,8 @@ function useReservation() {
     LocalChicagoDateTime.weekDays["Monday"],
   ];
 
-  const lunchTimes = ["12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45"];
-  const dinerTimes = ["19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "21:00", "21:30", "21:45"];
+  const lunchServiceTimes = ["12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45"];
+  const dinerServiceTimes = ["19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "21:00", "21:30", "21:45"];
 
   // A reservations is allowed up to 3 months ahead from now.
   const todayDateTime = new LocalChicagoDateTime();
@@ -36,7 +36,7 @@ function useReservation() {
   maxLocalBookingDateTime.forceSetTime("00:00:00");
 
   // Booking time on the same day is only allowed later than the current time.
-  const computeAvailableTimes = (timeTable, dateTime) =>
+  const computeServiceTimes = (timeTable, dateTime) =>
     timeTable.filter((item) =>
       !dateTime.isToday()
         ? true
@@ -55,8 +55,8 @@ function useReservation() {
       case "DATE-change":
         newDateTime.forceSetDate(action.value.getShortDate());
         if (newDateTime.isToday()) {
-          const firstAvailableTime = computeAvailableTimes(
-            [...lunchTimes, ...dinerTimes],
+          const firstAvailableTime = computeServiceTimes(
+            [...lunchServiceTimes, ...dinerServiceTimes],
             todayDateTime,
           )[0];
           newDateTime.forceSetTime(firstAvailableTime);
@@ -78,8 +78,8 @@ function useReservation() {
     }
 
     // The default selected time is set to the first available time slot of the selected date.
-    const firstAvailableTime = computeAvailableTimes(
-      [...lunchTimes, ...dinerTimes],
+    const firstAvailableTime = computeServiceTimes(
+      [...lunchServiceTimes, ...dinerServiceTimes],
       x,
     )[0];
     x.forceSetTime(firstAvailableTime + ":00");
@@ -102,8 +102,8 @@ function useReservation() {
     selectedDateTime === null || selectedDateTime.isToday()
       ? todayDateTime
       : resetTime(selectedDateTime);
-  const availableLunchTimes = computeAvailableTimes(lunchTimes, refDateTime);
-  const availableDinerTimes = computeAvailableTimes(dinerTimes, refDateTime);
+  const lunchServiceTimeslots = computeServiceTimes(lunchServiceTimes, refDateTime);
+  const dinerServiceTimeslots = computeServiceTimes(dinerServiceTimes, refDateTime);
 
   const handleDateChange = (value) => {
     // Parameter value is a LocalChicagoDateTime class instance
@@ -162,8 +162,8 @@ function useReservation() {
     closedDays,
     minLocalBookingDateTime,
     maxLocalBookingDateTime,
-    availableLunchTimes,
-    availableDinerTimes,
+    lunchServiceTimeslots,
+    dinerServiceTimeslots,
     selectedDateTime,
     handleDateChange,
     handleTimeChange,

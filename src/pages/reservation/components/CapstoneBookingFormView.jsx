@@ -11,8 +11,8 @@ function CapstoneBookingForm({
   handleGuestsChange,
   minLocalBookingDateTime,
   maxLocalBookingDateTime,
-  availableLunchTimes,
-  availableDinerTimes,
+  lunchServiceTimeslots,
+  dinerServiceTimeslots,
   selectedDateTime,
   handleDateChange,
   handleTimeChange,
@@ -78,12 +78,12 @@ function CapstoneBookingForm({
                 value={LocalChicagoDateTime.normalizeLcdtToTimeInput(selectedDateTime)}
               >
                 <optgroup label="Lunch">
-                  {availableLunchTimes.map((item, idx) => (
+                  {lunchServiceTimeslots.map((item, idx) => (
                     <option key={idx + 1}>{item}</option>
                   ))}
                 </optgroup>
                 <optgroup label="Diner">
-                  {availableDinerTimes.map((item, idx) => (
+                  {dinerServiceTimeslots.map((item, idx) => (
                     <option key={idx + 1}>{item}</option>
                   ))}
                 </optgroup>

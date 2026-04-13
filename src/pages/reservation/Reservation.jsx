@@ -17,8 +17,8 @@ function Reservation(props) {
     closedDays,
     minLocalBookingDateTime,
     maxLocalBookingDateTime,
-    availableLunchTimes,
-    availableDinerTimes,
+    lunchServiceTimeslots,
+    dinerServiceTimeslots,
     selectedDateTime,
     handleDateChange,
     handleTimeChange,
@@ -68,8 +68,8 @@ function Reservation(props) {
                 handleGuestsChange={handleGuestsChange}
                 minLocalBookingDateTime={minLocalBookingDateTime}
                 maxLocalBookingDateTime={maxLocalBookingDateTime}
-                availableLunchTimes={availableLunchTimes}
-                availableDinerTimes={availableDinerTimes}
+                lunchServiceTimeslots={lunchServiceTimeslots}
+                dinerServiceTimeslots={dinerServiceTimeslots}
                 selectedDateTime={selectedDateTime}
                 handleDateChange={handleDateChange}
                 handleTimeChange={handleTimeChange}
@@ -88,8 +88,8 @@ function Reservation(props) {
                 closedDays={closedDays}
                 minLocalBookingDateTime={minLocalBookingDateTime}
                 maxLocalBookingDateTime={maxLocalBookingDateTime}
-                availableLunchTimes={availableLunchTimes}
-                availableDinerTimes={availableDinerTimes}
+                lunchServiceTimeslots={lunchServiceTimeslots}
+                dinerServiceTimeslots={dinerServiceTimeslots}
                 selectedDateTime={selectedDateTime}
                 handleDateChange={handleDateChange}
                 handleTimeChange={handleTimeChange}
